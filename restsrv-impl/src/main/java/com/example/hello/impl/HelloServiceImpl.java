@@ -1,15 +1,15 @@
 package com.example.hello.impl;
 
 import akka.NotUsed;
-import akka.stream.javadsl.Source;
 import com.example.hello.api.GreetingMessage;
 import com.example.hello.api.HelloService;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
-import lombok.val;
+import org.jdbi.v3.core.Jdbi;
 import org.pcollections.PVector;
 import org.pcollections.TreePVector;
 
 import javax.inject.Inject;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -17,18 +17,32 @@ import java.util.concurrent.CompletableFuture;
  */
 public class HelloServiceImpl implements HelloService {
 
-    @Inject
-    public HelloServiceImpl() {
+    final private Jdbi jdbi;
 
+    @Inject
+    public HelloServiceImpl(Jdbi jdbi) {
+        this.jdbi = jdbi;
     }
 
     @Override
     public ServiceCall<NotUsed, PVector<GreetingMessage>> hello(String id) {
+
         return request -> {
-            PVector<GreetingMessage> result = TreePVector.<GreetingMessage>empty()
-                    .plus(greeting(id, 1))
-                    .plus(greeting(id, 1));
-            return CompletableFuture.completedFuture(result);
+
+            jdbi.useHandle(h -> { h
+                .createUpdate("insert into contacts(name) values(:name)")
+                .bind("name", id)
+                .execute();
+            });
+
+            List<GreetingMessage> result = jdbi.withHandle(h -> h
+                    .createQuery("select name from contacts")
+                    .map((rs, ctx) -> new GreetingMessage(rs.getString("name")))
+                    .list() //TODO: create or find PCollection Jdbi Collectors
+                    //TODO: even better if there is there a way to Serialize java8 stream or iterator to json?
+            );
+
+            return CompletableFuture.completedFuture(TreePVector.from(result));
         };
     }
 

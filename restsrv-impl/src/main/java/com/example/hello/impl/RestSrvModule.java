@@ -25,9 +25,11 @@ public class RestSrvModule extends AbstractModule implements ServiceGuiceSupport
     protected void configure() {
         bindService(HelloService.class, HelloServiceImpl.class);
 
-        if (environment.isProd()) {
-            bind(ServiceLocator.class).to(ConfigurationServiceLocator.class);
-        }
+//        if (environment.isProd()) {
+//            bind(ServiceLocator.class).to(ConfigurationServiceLocator.class);
+//        }
+
+        //TODO: https://github.com/google/guice/wiki/ProviderBindings
 
     }
 }
