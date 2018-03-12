@@ -27,6 +27,7 @@ lazy val `restsrv-impl` = (project in file("restsrv-impl"))
     libraryDependencies ++= Seq(
       lagomLogback,
       lagomJavadslTestKit,
+      lagomJavadslPersistenceJdbc,
       lombok
 //      lagomJavadslCluster,
 //      `akka-cluster-tools`

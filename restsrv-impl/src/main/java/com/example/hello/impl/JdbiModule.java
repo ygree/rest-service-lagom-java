@@ -1,32 +1,52 @@
 package com.example.hello.impl;
 
 import com.google.inject.AbstractModule;
+import com.lightbend.lagom.javadsl.persistence.jdbc.JdbcSession;
 import com.lightbend.lagom.javadsl.server.ServiceGuiceSupport;
 import org.jdbi.v3.core.Jdbi;
 
+import javax.inject.Inject;
 import javax.inject.Provider;
+import java.util.concurrent.CompletionStage;
 
 public class JdbiModule extends AbstractModule implements ServiceGuiceSupport {
 
-     static private class DatabaseProvider implements Provider<Jdbi> {
-         final private Jdbi jdbi;
+     static private class DatabaseProvider implements Provider<JdbiSession> {
+        final private Provider<JdbcSession> jdbcSession;
 
-        public DatabaseProvider() {
-            jdbi = Jdbi.create("jdbc:h2:~/test");
+        @Inject
+        public DatabaseProvider(Provider<JdbcSession> jdbcSession) {
+            this.jdbcSession = jdbcSession;
+//            this.jdbiSession = new JdbiSession(jdbcSession);
 
-            jdbi.useHandle(h -> {
-                h.execute("create table contacts (name varchar(100))");
-            });
+//            CompletionStage<Integer> createTable = jdbcSession.withConnection(c ->
+//                    Jdbi.create(() -> c)
+//                            .withHandle(h ->
+//                                    h.execute("create table contacts (name varchar(100))")
+//                            )
+//            );
+//
+//            try {
+//
+//                createTable.toCompletableFuture().get();
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+
+//            jdbi = Jdbi.create()
+//            jdbi.useHandle(h -> {
+//                h.execute("create table contacts (name varchar(100))");
+//            });
         }
 
         @Override
-        public Jdbi get() {
-            return jdbi;
+        public JdbiSession get() {
+            return new JdbiSession(jdbcSession.get());
         }
     }
 
     @Override
     protected void configure() {
-        bind(Jdbi.class).toProvider(DatabaseProvider.class);
+        bind(JdbiSession.class).toProvider(DatabaseProvider.class);
     }
 }
