@@ -14,13 +14,11 @@ public class JdbiSession {
         this.jdbcSession = jdbcSession;
     }
 
+    //TODO keep withHandle interface (pack original exception to SQLException and then unpack
     public <R> CompletionStage<R> withHandle(HandleCallback<R, SQLException> callback) {
         return jdbcSession.withConnection(c -> {
             try {
-                return Jdbi.create(() -> c)
-                        .withHandle(h ->
-                                callback.withHandle(h)
-                        );
+                return Jdbi.create(() -> c).withHandle(callback);
             } catch (Throwable ex) {
                 throw new SQLException(ex);
             }
