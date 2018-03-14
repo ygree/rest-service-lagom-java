@@ -4,7 +4,7 @@ Rest Service with Lagom Framework and Java
 TODO
 ----
 
-1. Add Slick example
+1. How to build
 2. Add token verification
 3. Add Maven
 

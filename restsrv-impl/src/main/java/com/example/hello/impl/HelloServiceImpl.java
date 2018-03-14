@@ -4,6 +4,7 @@ import akka.NotUsed;
 import com.example.hello.api.GreetingMessage;
 import com.example.hello.api.HelloService;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
+import com.lightbend.lagom.jdbi.JdbiSession;
 import org.pcollections.PVector;
 import org.pcollections.TreePVector;
 
@@ -22,13 +23,12 @@ public class HelloServiceImpl implements HelloService {
     public HelloServiceImpl(JdbiSession jdbiSession) {
         this.jdbiSession = jdbiSession;
 
-        //TODO: remove create table from here!!!
+        //NOTE: it's not production code. We create this table here only to simplify this example.
         CompletionStage<Integer> createTable = jdbiSession.withHandle(h ->
-                h.execute("create table contacts (name varchar(100))")
+                h.execute("create table IF NOT EXISTS contacts (name varchar(100))")
         );
 
         try {
-
             createTable.toCompletableFuture().get();
         } catch (Exception e) {
             e.printStackTrace();
@@ -40,25 +40,24 @@ public class HelloServiceImpl implements HelloService {
 
         return request -> {
 
-            CompletionStage<Integer> insert = jdbiSession.withHandle(h -> h
-                    .createUpdate("insert into contacts(name) values(:name)")
-                    .bind("name", id)
-                    .execute()
-            );
-
             CompletionStage<PVector<GreetingMessage>> result = jdbiSession.withHandle(h -> {
+
+                // insert a new contact
+                h.attach(ContactsDao.class).insertContact(id);
+
+                // select list of all contacts
                 List<GreetingMessage> list = h
                         .createQuery("select name from contacts")
                         .map((rs, ctx) -> new GreetingMessage(rs.getString("name")))
-                        .list();//TODO: create or find PCollection Jdbi Collectors
-//TODO: even better if there is there a way to Serialize java8 stream or iterator to json?
+                        .list();
 
+                // pack all selected contacts into an immutable collection
                 return TreePVector.from(list);
-
             });
 
-            return insert.thenCombine(result, (a, b) -> b);
+            return result;
         };
     }
+
 
 }

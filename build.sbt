@@ -50,6 +50,7 @@ val jdbi = Seq(
 val h2 = Seq("com.h2database" % "h2" % "1.4.196")
 
 def common = Seq(
+  // this setting required if use Sql Objects and bind query parameters to method parameters by their names
   javacOptions in compile += "-parameters"
 )
 
