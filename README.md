@@ -15,3 +15,9 @@ Run Locally
 
 `curl -i http://localhost:61450/api/hello/world`
 
+Build and run docker image
+--------------------------
+
+`sbt restsrv-impl/docker:publishLocal`
+
+`docker run -p 9000:9000 restsrv-impl:1.0-SNAPSHOT`
