@@ -1,11 +1,10 @@
 Rest Service with Lagom Framework and Java
 ------------------------------------------
 
-TODO
-----
+This is an example application that makes a use of:
 
-1. Add token verification
-2. Add Maven
+- Lagom with Java
+- Jdbi with Lagom JdbcSession running by Slick behind the scene and providing virtually async JDBC interface
 
 Run Locally
 -----------
