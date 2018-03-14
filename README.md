@@ -4,9 +4,8 @@ Rest Service with Lagom Framework and Java
 TODO
 ----
 
-1. How to build
-2. Add token verification
-3. Add Maven
+1. Add token verification
+2. Add Maven
 
 Run Locally
 -----------
@@ -21,3 +20,12 @@ Build and run docker image
 `sbt restsrv-impl/docker:publishLocal`
 
 `docker run -p 9000:9000 restsrv-impl:1.0-SNAPSHOT`
+
+Build zip package
+-----------------
+
+`sbt universal:packageBin`
+
+it will generate zip archive in: `restsrv-impl/target/universal/`
+It will contain bin directory with scripts to run this application.
+
