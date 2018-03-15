@@ -24,7 +24,7 @@ public interface HelloService extends Service {
 
     @Override
     default Descriptor descriptor() {
-        return named("abc")
+        return named("restsrv")
                 .withCalls(
                         pathCall("/api/hello/:id", this::hello)
                 )
