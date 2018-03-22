@@ -31,10 +31,41 @@ public class HelloServiceTest {
 
     @Test
     public void testHello() throws Exception {
+
         HelloService service = server.client(HelloService.class);
 
-        PVector<GreetingMessage> result = service.hello("Yury").invoke().toCompletableFuture().get(5, SECONDS);
+        PVector<GreetingMessage> result = service.hello("Yury")
+                .invoke().toCompletableFuture().get(5, SECONDS);
 
         assertTrue(result.contains(new GreetingMessage("Yury")));
     }
+
+    @Test
+    public void testAuthHelloSuccess() throws Exception {
+
+        HelloService service = server.client(HelloService.class);
+
+        PVector<GreetingMessage> result = service.authHello("Yury")
+                .handleRequestHeader(h -> h.withHeader("Authorization", "Basic dGVzdDp0ZXN0"))
+                .invoke()
+                .toCompletableFuture().get(5, SECONDS);
+
+
+        assertTrue(result.contains(new GreetingMessage("Yury")));
+    }
+
+    @Test(expected = com.lightbend.lagom.javadsl.api.transport.Forbidden.class) //expected = java.util.concurrent.ExecutionException.class)
+    public void testAuthHelloFailure() throws Throwable {
+
+        HelloService service = server.client(HelloService.class);
+
+        Throwable result = service.authHello("Yury")
+                .invoke()
+                .toCompletableFuture()
+                .handle((v, e) -> e)
+                .get(5, SECONDS);
+
+        throw result.getCause();
+    }
+
 }
