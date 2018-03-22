@@ -12,6 +12,7 @@ Run Locally
 `sbt runAll`
 
 `curl -i http://localhost:61450/api/hello/world`
+`curl -i -u test:test http://localhost:61450/api/auth-hello/world`
 
 Build and run docker image
 --------------------------
