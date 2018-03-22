@@ -1,9 +1,12 @@
 package com.example.hello.impl;
 
 import akka.NotUsed;
+import com.example.auth.AuthService;
 import com.example.hello.api.GreetingMessage;
 import com.example.hello.api.HelloService;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
+import com.lightbend.lagom.javadsl.server.HeaderServiceCall;
+import com.lightbend.lagom.javadsl.server.ServerServiceCall;
 import com.lightbend.lagom.jdbi.JdbiSession;
 import org.pcollections.PVector;
 import org.pcollections.TreePVector;
@@ -18,10 +21,12 @@ import java.util.concurrent.CompletionStage;
 public class HelloServiceImpl implements HelloService {
 
     final private JdbiSession jdbiSession;
+    final private AuthService authService;
 
     @Inject
-    public HelloServiceImpl(JdbiSession jdbiSession) {
+    public HelloServiceImpl(JdbiSession jdbiSession, AuthService authService) {
         this.jdbiSession = jdbiSession;
+        this.authService = authService;
 
         //NOTE: it's not production code. We create this table here only to simplify this example.
         CompletionStage<Integer> createTable = jdbiSession.withHandle(h ->
@@ -33,6 +38,19 @@ public class HelloServiceImpl implements HelloService {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public <Request, Response> ServerServiceCall<Request, Response> logged(
+            ServerServiceCall<Request, Response> serviceCall) {
+        return HeaderServiceCall.compose(requestHeader -> {
+            System.out.println("Received " + requestHeader.method() + " " + requestHeader.uri());
+            return serviceCall;
+        });
+    }
+
+    @Override
+    public ServiceCall<NotUsed, PVector<GreetingMessage>> authHello(String id) {
+        return logged(authService.authenticated(user -> hello(id)::invoke));
     }
 
     @Override

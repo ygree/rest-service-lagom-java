@@ -22,11 +22,14 @@ public interface HelloService extends Service {
      */
     ServiceCall<NotUsed, PVector<GreetingMessage>> hello(String id);
 
+    ServiceCall<NotUsed, PVector<GreetingMessage>> authHello(String id);
+
     @Override
     default Descriptor descriptor() {
         return named("restsrv")
                 .withCalls(
-                        pathCall("/api/hello/:id", this::hello)
+                        pathCall("/api/hello/:id", this::hello),
+                        pathCall("/api/auth-hello/:id", this::authHello)
                 )
                 .withAutoAcl(true);
     }
