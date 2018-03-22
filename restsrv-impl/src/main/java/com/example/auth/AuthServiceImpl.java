@@ -32,7 +32,8 @@ public class AuthServiceImpl implements AuthService {
             PSequence<String> authorization = requestHeader.headers().getOrDefault("Authorization", TreePVector.empty());
 
             Optional<BasicAuthUtils.Credentials> credentials = authorization.stream()
-                    .flatMap(header -> Streams.stream(BasicAuthUtils.parseHeader(header))).findFirst();
+                    .flatMap(header -> Streams.stream(BasicAuthUtils.parseHeader(header)))
+                    .findFirst();
 
             // First lookup user
             CompletionStage<Optional<User>> userLookup = credentials
