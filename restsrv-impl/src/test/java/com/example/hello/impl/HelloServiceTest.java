@@ -51,9 +51,9 @@ public class HelloServiceTest {
 
         ParsedUrlParams parsedUrlParams = service.parseUrlParams(
                 "indexKey",
-                "20180101",
-                "20180228",
-                Optional.of("MONTHLY"),
+                LocalDate.of(2018, 1, 1),
+                LocalDate.of(2018, 2, 28),
+                Optional.of(ParsedUrlParams.Frequency.MONTHLY),
                 Optional.of(false))
                 .invoke().toCompletableFuture().get(5, SECONDS);
 
