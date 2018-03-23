@@ -11,8 +11,19 @@ Run Locally
 
 `sbt runAll`
 
+Simple GET request
+------------------
+
 `curl -i http://localhost:61450/api/hello/world`
 `curl -i -u test:test http://localhost:61450/api/auth-hello/world`
+
+Multiple GET params
+-------------------
+
+```
+curl -i http://localhost:61450/api/data/v1/indexlevels/indexKey/20180101/20180228?frequency=DAILY&includeChildren=false
+```
+
 
 Build and run docker image
 --------------------------
