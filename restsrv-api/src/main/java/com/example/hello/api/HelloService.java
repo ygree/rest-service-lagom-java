@@ -1,11 +1,13 @@
 package com.example.hello.api;
 
 import akka.NotUsed;
+import com.example.util.date.LocalDatePathSerializer;
 import com.lightbend.lagom.javadsl.api.Descriptor;
 import com.lightbend.lagom.javadsl.api.Service;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
 import org.pcollections.PVector;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 import static com.lightbend.lagom.javadsl.api.Service.named;
@@ -28,10 +30,10 @@ public interface HelloService extends Service {
      * /api/data/v1/indexlevels/${indexKey}/${effectiveFromDate}/${effectiveToDate}?frequency=DAILY&includeChildren=false
      */
     ServiceCall<NotUsed, ParsedUrlParams> parseUrlParams(String indexKey,
-                                                String effectiveFromDate,
-                                                String effectiveToDate,
-                                                Optional<String> frequency,
-                                                Optional<Boolean> includeChildren);
+                                                         LocalDate effectiveFromDate,
+                                                         LocalDate effectiveToDate,
+                                                         Optional<String> frequency,
+                                                         Optional<Boolean> includeChildren);
 
     ServiceCall<NotUsed, PVector<GreetingMessage>> authHello(String id);
 
@@ -44,6 +46,7 @@ public interface HelloService extends Service {
                         pathCall("/api/data/v1/indexlevels/:index/:from/:to?frequency&includeChildren",
                                 this::parseUrlParams)
                 )
+                .withPathParamSerializer(LocalDate.class, new LocalDatePathSerializer())
                 .withAutoAcl(true);
     }
 

@@ -16,6 +16,7 @@ lazy val `restsrv-api` = (project in file("restsrv-api"))
   .settings(
     libraryDependencies ++= Seq(
       lagomJavadslApi,
+      lagomJavadslTestKit,
       lombok
     )
   )

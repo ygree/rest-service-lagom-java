@@ -5,7 +5,6 @@ import com.example.auth.AuthService;
 import com.example.hello.api.GreetingMessage;
 import com.example.hello.api.HelloService;
 import com.example.hello.api.ParsedUrlParams;
-import com.example.util.date.DateParser;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
 import com.lightbend.lagom.javadsl.server.HeaderServiceCall;
 import com.lightbend.lagom.javadsl.server.ServerServiceCall;
@@ -14,6 +13,7 @@ import org.pcollections.PVector;
 import org.pcollections.TreePVector;
 
 import javax.inject.Inject;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
@@ -84,8 +84,8 @@ public class HelloServiceImpl implements HelloService {
 
     @Override
     public ServiceCall<NotUsed, ParsedUrlParams> parseUrlParams(String indexKey,
-                                                                String effectiveFromDate,
-                                                                String effectiveToDate,
+                                                                LocalDate effectiveFromDate,
+                                                                LocalDate effectiveToDate,
                                                                 Optional<String> frequency,
                                                                 Optional<Boolean> includeChildren) {
 
@@ -93,8 +93,8 @@ public class HelloServiceImpl implements HelloService {
 
             ParsedUrlParams result = ParsedUrlParams.builder()
                     .indexKey(indexKey)
-                    .effectiveFromDate(DateParser.parse_yyyyMMdd(effectiveFromDate))
-                    .effectiveToDate(DateParser.parse_yyyyMMdd(effectiveToDate))
+                    .effectiveFromDate(effectiveFromDate)
+                    .effectiveToDate(effectiveToDate)
                     .frequency(frequency
                             .map(String::toUpperCase)
                             .map(ParsedUrlParams.Frequency::valueOf)
