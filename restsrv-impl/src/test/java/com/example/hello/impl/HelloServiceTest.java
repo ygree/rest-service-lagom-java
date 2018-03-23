@@ -1,15 +1,20 @@
 package com.example.hello.impl;
 
-import static com.lightbend.lagom.javadsl.testkit.ServiceTest.*;
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.junit.Assert.assertTrue;
-
 import com.example.hello.api.GreetingMessage;
 import com.example.hello.api.HelloService;
+import com.example.hello.api.ParsedUrlParams;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pcollections.PVector;
+
+import java.time.LocalDate;
+import java.util.Optional;
+
+import static com.lightbend.lagom.javadsl.testkit.ServiceTest.*;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class HelloServiceTest {
 
@@ -41,6 +46,29 @@ public class HelloServiceTest {
     }
 
     @Test
+    public void parseUrlParamsTest() throws Exception {
+        HelloService service = server.client(HelloService.class);
+
+        ParsedUrlParams parsedUrlParams = service.parseUrlParams(
+                "indexKey",
+                LocalDate.of(2018, 1, 1),
+                LocalDate.of(2018, 2, 28),
+                Optional.of(ParsedUrlParams.Frequency.MONTHLY),
+                Optional.of(false))
+                .invoke().toCompletableFuture().get(5, SECONDS);
+
+        ParsedUrlParams expected = ParsedUrlParams.builder()
+                .indexKey("indexKey")
+                .effectiveFromDate(LocalDate.of(2018, 1, 1))
+                .effectiveToDate(LocalDate.of(2018, 2, 28))
+                .frequency(ParsedUrlParams.Frequency.MONTHLY)
+                .includeChildren(false)
+                .build();
+
+        assertEquals(expected, parsedUrlParams);
+    }
+
+    @Test
     public void testAuthHelloSuccess() throws Exception {
 
         HelloService service = server.client(HelloService.class);
@@ -69,3 +97,4 @@ public class HelloServiceTest {
     }
 
 }
+

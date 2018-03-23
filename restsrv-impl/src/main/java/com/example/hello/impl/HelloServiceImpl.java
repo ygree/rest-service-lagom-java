@@ -4,6 +4,7 @@ import akka.NotUsed;
 import com.example.auth.AuthService;
 import com.example.hello.api.GreetingMessage;
 import com.example.hello.api.HelloService;
+import com.example.hello.api.ParsedUrlParams;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
 import com.lightbend.lagom.javadsl.server.HeaderServiceCall;
 import com.lightbend.lagom.javadsl.server.ServerServiceCall;
@@ -12,8 +13,12 @@ import org.pcollections.PVector;
 import org.pcollections.TreePVector;
 
 import javax.inject.Inject;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletionStage;
+
+import static java.util.concurrent.CompletableFuture.completedFuture;
 
 /**
  * Implementation of the HelloService.
@@ -77,5 +82,24 @@ public class HelloServiceImpl implements HelloService {
         };
     }
 
+    @Override
+    public ServiceCall<NotUsed, ParsedUrlParams> parseUrlParams(String indexKey,
+                                                                LocalDate effectiveFromDate,
+                                                                LocalDate effectiveToDate,
+                                                                Optional<ParsedUrlParams.Frequency> frequency,
+                                                                Optional<Boolean> includeChildren) {
 
+        return request -> {
+
+            ParsedUrlParams result = ParsedUrlParams.builder()
+                    .indexKey(indexKey)
+                    .effectiveFromDate(effectiveFromDate)
+                    .effectiveToDate(effectiveToDate)
+                    .frequency(frequency.orElse(ParsedUrlParams.Frequency.DAILY))
+                    .includeChildren(includeChildren.orElse(false))
+                    .build();
+
+            return completedFuture(result);
+        };
+    }
 }

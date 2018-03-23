@@ -1,10 +1,14 @@
 package com.example.hello.api;
 
 import akka.NotUsed;
+import com.example.util.date.LocalDatePathSerializer;
 import com.lightbend.lagom.javadsl.api.Descriptor;
 import com.lightbend.lagom.javadsl.api.Service;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
 import org.pcollections.PVector;
+
+import java.time.LocalDate;
+import java.util.Optional;
 
 import static com.lightbend.lagom.javadsl.api.Service.named;
 import static com.lightbend.lagom.javadsl.api.Service.pathCall;
@@ -22,6 +26,15 @@ public interface HelloService extends Service {
      */
     ServiceCall<NotUsed, PVector<GreetingMessage>> hello(String id);
 
+    /**
+     * /api/data/v1/indexlevels/${indexKey}/${effectiveFromDate}/${effectiveToDate}?frequency=DAILY&includeChildren=false
+     */
+    ServiceCall<NotUsed, ParsedUrlParams> parseUrlParams(String indexKey,
+                                                         LocalDate effectiveFromDate,
+                                                         LocalDate effectiveToDate,
+                                                         Optional<ParsedUrlParams.Frequency> frequency,
+                                                         Optional<Boolean> includeChildren);
+
     ServiceCall<NotUsed, PVector<GreetingMessage>> authHello(String id);
 
     @Override
@@ -29,8 +42,14 @@ public interface HelloService extends Service {
         return named("restsrv")
                 .withCalls(
                         pathCall("/api/hello/:id", this::hello),
-                        pathCall("/api/auth-hello/:id", this::authHello)
+                        pathCall("/api/auth-hello/:id", this::authHello),
+                        pathCall("/api/data/v1/indexlevels/:index/:from/:to?frequency&includeChildren",
+                                this::parseUrlParams)
                 )
+                .withPathParamSerializer(LocalDate.class, new LocalDatePathSerializer())
+                .withPathParamSerializer(ParsedUrlParams.Frequency.class, new FrequencyPathParamSerializer())
                 .withAutoAcl(true);
     }
+
 }
+
