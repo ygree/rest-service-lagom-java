@@ -86,7 +86,7 @@ public class HelloServiceImpl implements HelloService {
     public ServiceCall<NotUsed, ParsedUrlParams> parseUrlParams(String indexKey,
                                                                 LocalDate effectiveFromDate,
                                                                 LocalDate effectiveToDate,
-                                                                Optional<String> frequency,
+                                                                Optional<ParsedUrlParams.Frequency> frequency,
                                                                 Optional<Boolean> includeChildren) {
 
         return request -> {
@@ -95,11 +95,7 @@ public class HelloServiceImpl implements HelloService {
                     .indexKey(indexKey)
                     .effectiveFromDate(effectiveFromDate)
                     .effectiveToDate(effectiveToDate)
-                    .frequency(frequency
-                            .map(String::toUpperCase)
-                            .map(ParsedUrlParams.Frequency::valueOf)
-                            .orElse(ParsedUrlParams.Frequency.DAILY)
-                    )
+                    .frequency(frequency.orElse(ParsedUrlParams.Frequency.DAILY))
                     .includeChildren(includeChildren.orElse(false))
                     .build();
 

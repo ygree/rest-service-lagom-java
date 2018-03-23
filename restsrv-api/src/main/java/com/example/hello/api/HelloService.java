@@ -32,7 +32,7 @@ public interface HelloService extends Service {
     ServiceCall<NotUsed, ParsedUrlParams> parseUrlParams(String indexKey,
                                                          LocalDate effectiveFromDate,
                                                          LocalDate effectiveToDate,
-                                                         Optional<String> frequency,
+                                                         Optional<ParsedUrlParams.Frequency> frequency,
                                                          Optional<Boolean> includeChildren);
 
     ServiceCall<NotUsed, PVector<GreetingMessage>> authHello(String id);
@@ -47,6 +47,7 @@ public interface HelloService extends Service {
                                 this::parseUrlParams)
                 )
                 .withPathParamSerializer(LocalDate.class, new LocalDatePathSerializer())
+                .withPathParamSerializer(ParsedUrlParams.Frequency.class, new FrequencyPathParamSerializer())
                 .withAutoAcl(true);
     }
 

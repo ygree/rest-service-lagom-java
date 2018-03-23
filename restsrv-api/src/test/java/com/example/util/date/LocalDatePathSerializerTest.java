@@ -11,7 +11,7 @@ public class LocalDatePathSerializerTest {
     final private LocalDatePathSerializer serializer = new LocalDatePathSerializer();
 
     @Test
-    public void successTest() {
+    public void test() {
         LocalDate origDate = LocalDate.now();
         PSequence<String> serialized = serializer.serialize(origDate);
 
