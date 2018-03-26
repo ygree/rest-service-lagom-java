@@ -4,7 +4,16 @@ organization in ThisBuild := "com.example"
 version in ThisBuild := "1.0-SNAPSHOT"
 
 // the Scala version that will be used for cross-compiled libraries
-scalaVersion in ThisBuild := "2.12.4"
+//scalaVersion in ThisBuild := "2.12.4"
+// the Scala version that will be used for cross-compiled libraries
+scalaVersion in ThisBuild := "2.11.11"
+
+lazy val cinnamonDependencies = Seq(
+  // Use Coda Hale Metrics and Lagom instrumentation
+  Cinnamon.library.cinnamonCHMetrics,
+  Cinnamon.library.cinnamonLagom,
+  Cinnamon.library.cinnamonAkkaHttp
+)
 
 lazy val `restsrv` = (project in file("."))
   .aggregate(
@@ -14,10 +23,11 @@ lazy val `restsrv` = (project in file("."))
 lazy val `restsrv-api` = (project in file("restsrv-api"))
   .settings(common: _*)
   .settings(
+    resolvers += Cinnamon.resolver.commercial,
     libraryDependencies ++= Seq(
       lagomJavadslApi,
       lombok
-    )
+    ) ++ cinnamonDependencies
   )
 
 lazy val `restsrv-impl` = (project in file("restsrv-impl"))
@@ -31,7 +41,7 @@ lazy val `restsrv-impl` = (project in file("restsrv-impl"))
       lombok
 //      lagomJavadslCluster,
 //      `akka-cluster-tools`
-    ) ++ jdbi ++ h2
+    ) ++ jdbi ++ h2 ++ cinnamonDependencies
   )
   .settings(lagomForkedTestSettings: _*)
   .dependsOn(`restsrv-api`)
@@ -57,3 +67,4 @@ def common = Seq(
 //lagomServiceLocatorEnabled in ThisBuild := false
 lagomKafkaEnabled in ThisBuild := false
 lagomCassandraEnabled in ThisBuild := false
+
