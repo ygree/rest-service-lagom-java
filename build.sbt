@@ -62,9 +62,18 @@ lazy val cinnamonDependencies = Seq(
   Cinnamon.library.cinnamonCHMetrics,
   Cinnamon.library.cinnamonLagom,
   Cinnamon.library.cinnamonAkkaHttp,
-  Cinnamon.library.cinnamonAkka
+  Cinnamon.library.cinnamonAkka,
+  Cinnamon.library.cinnamonPrometheus,
+  Cinnamon.library.cinnamonPrometheusHttpServer
 )
 
 //lagomServiceLocatorEnabled in ThisBuild := false
 lagomKafkaEnabled in ThisBuild := false
 lagomCassandraEnabled in ThisBuild := false
+
+// Add the Cinnamon Agent for run and test
+//cinnamon in run := true
+//cinnamon in test := true
+
+// Set the Cinnamon Agent log level
+cinnamonLogLevel := "INFO"
