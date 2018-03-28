@@ -53,7 +53,7 @@ public class HelloServiceImpl implements HelloService {
         @Override
         public Receive createReceive() {
             return ReceiveBuilder.create()
-                    .match(String.class, m -> System.out.println("received: " + m))
+                    .match(String.class, m -> System.out.print("."))
                     .build();
         }
     }
