@@ -4,9 +4,7 @@ organization in ThisBuild := "com.example"
 version in ThisBuild := "1.0-SNAPSHOT"
 
 // the Scala version that will be used for cross-compiled libraries
-//scalaVersion in ThisBuild := "2.12.4"
-// the Scala version that will be used for cross-compiled libraries
-scalaVersion in ThisBuild := "2.11.11"
+scalaVersion in ThisBuild := "2.12.5"
 
 lazy val `restsrv` = (project in file("."))
   .aggregate(
@@ -70,8 +68,3 @@ lazy val cinnamonDependencies = Seq(
 //lagomServiceLocatorEnabled in ThisBuild := false
 lagomKafkaEnabled in ThisBuild := false
 lagomCassandraEnabled in ThisBuild := false
-
-//libraryDependencies += "com.novocode" % "junit-interface" % "0.11" % "test"
-
-//libraryDependencies ++= cinnamonDependencies
-
