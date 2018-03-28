@@ -12,15 +12,17 @@ lazy val cinnamonDependencies = Seq(
   // Use Coda Hale Metrics and Lagom instrumentation
   Cinnamon.library.cinnamonCHMetrics,
   Cinnamon.library.cinnamonLagom,
-  Cinnamon.library.cinnamonAkkaHttp
+  Cinnamon.library.cinnamonAkkaHttp,
+  Cinnamon.library.cinnamonAkka
 )
 
 lazy val `restsrv` = (project in file("."))
   .aggregate(
     `restsrv-api`, `restsrv-impl`
-  )
+  ).enablePlugins(Cinnamon)
 
 lazy val `restsrv-api` = (project in file("restsrv-api"))
+  .enablePlugins(Cinnamon)
   .settings(common: _*)
   .settings(
     resolvers += Cinnamon.resolver.commercial,
@@ -31,16 +33,17 @@ lazy val `restsrv-api` = (project in file("restsrv-api"))
   )
 
 lazy val `restsrv-impl` = (project in file("restsrv-impl"))
-  .enablePlugins(LagomJava)
+  .enablePlugins(LagomJava, Cinnamon)
   .settings(common: _*)
   .settings(
     libraryDependencies ++= Seq(
       lagomLogback,
       lagomJavadslTestKit,
       lagomJavadslPersistenceJdbc,
-      lombok
-//      lagomJavadslCluster,
+      lombok,
+      sbr
 //      `akka-cluster-tools`
+
     ) ++ jdbi ++ h2 ++ cinnamonDependencies
   )
   .settings(lagomForkedTestSettings: _*)
@@ -50,6 +53,7 @@ lazy val `restsrv-impl` = (project in file("restsrv-impl"))
 val akkaVersion = "2.5.11"
 val lombok = "org.projectlombok" % "lombok" % "1.16.18"
 val `akka-cluster-tools` = "com.typesafe.akka" %% "akka-cluster-tools" % akkaVersion
+val sbr = "com.lightbend.akka" %% "akka-split-brain-resolver" % "1.0.0"
 
 val jdbiVersion = "3.1.0"
 val jdbi = Seq(
@@ -67,4 +71,8 @@ def common = Seq(
 //lagomServiceLocatorEnabled in ThisBuild := false
 lagomKafkaEnabled in ThisBuild := false
 lagomCassandraEnabled in ThisBuild := false
+
+//libraryDependencies += "com.novocode" % "junit-interface" % "0.11" % "test"
+
+libraryDependencies ++= cinnamonDependencies
 

@@ -1,6 +1,11 @@
 package com.example.hello.impl;
 
 import akka.NotUsed;
+import akka.actor.AbstractActor;
+import akka.actor.ActorRef;
+import akka.actor.ActorSystem;
+import akka.actor.Props;
+import akka.japi.pf.ReceiveBuilder;
 import com.example.auth.AuthService;
 import com.example.hello.api.GreetingMessage;
 import com.example.hello.api.HelloService;
@@ -23,8 +28,10 @@ public class HelloServiceImpl implements HelloService {
     final private JdbiSession jdbiSession;
     final private AuthService authService;
 
+    final private ActorRef foo;
+
     @Inject
-    public HelloServiceImpl(JdbiSession jdbiSession, AuthService authService) {
+    public HelloServiceImpl(JdbiSession jdbiSession, AuthService authService, ActorSystem system) {
         this.jdbiSession = jdbiSession;
         this.authService = authService;
 
@@ -37,6 +44,17 @@ public class HelloServiceImpl implements HelloService {
             createTable.toCompletableFuture().get();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+
+        this.foo = system.actorOf(Props.create(Foo.class, Foo::new), "foo");
+    }
+
+    static class Foo extends AbstractActor {
+        @Override
+        public Receive createReceive() {
+            return ReceiveBuilder.create()
+                    .match(String.class, m -> System.out.println("received: " + m))
+                    .build();
         }
     }
 
@@ -57,6 +75,7 @@ public class HelloServiceImpl implements HelloService {
     public ServiceCall<NotUsed, PVector<GreetingMessage>> hello(String id) {
 
         return request -> {
+            foo.tell(id, ActorRef.noSender());
 
             CompletionStage<PVector<GreetingMessage>> result = jdbiSession.withHandle(h -> {
 
