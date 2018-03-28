@@ -42,7 +42,7 @@ lazy val `restsrv-impl` = (project in file("restsrv-impl"))
 val akkaVersion = "2.5.11"
 val lombok = "org.projectlombok" % "lombok" % "1.16.18"
 val `akka-cluster-tools` = "com.typesafe.akka" %% "akka-cluster-tools" % akkaVersion
-val sbr = "com.lightbend.akka" %% "akka-split-brain-resolver" % "1.0.0"
+val sbr = "com.lightbend.akka" %% "akka-split-brain-resolver" % "1.1.0"
 
 val jdbiVersion = "3.1.0"
 val jdbi = Seq(
