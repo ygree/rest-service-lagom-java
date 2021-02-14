@@ -40,3 +40,9 @@ Build zip package
 it will generate zip archive in: `restsrv-impl/target/universal/`
 It will contain bin directory with scripts to run this application.
 
+Run with Telemetry metrics
+--------------------------
+
+The next command should enable Cinnamon but it doesn't 
+`sbt "restsrv-impl/test:runMain play.core.server.ProdServerStart"`
+
